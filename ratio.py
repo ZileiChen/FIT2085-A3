@@ -21,9 +21,9 @@ class Percentiles(Generic[T]):
         del self.tree[item]
 
     def ratio(self, x, y):
-        
-        # use binary search for the lower and upper values
 
+        # use binary search for the lower and upper values
+        raise NotImplementedError()
 
 if __name__ == "__main__":
     points = list(range(50))
