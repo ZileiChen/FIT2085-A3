@@ -92,8 +92,10 @@ class BinarySearchTree(Generic[K, I]):
             current = TreeNode(key, item=item)
             self.length += 1
         elif key < current.key:
+            current.subtree_size += 1
             current.left = self.insert_aux(current.left, key, item)
         elif key > current.key:
+            current.subtree_size += 1
             current.right = self.insert_aux(current.right, key, item)
         else:  # key == current.key
             raise ValueError('Inserting duplicate item')
@@ -111,8 +113,10 @@ class BinarySearchTree(Generic[K, I]):
         if current is None:  # key not found
             raise ValueError('Deleting non-existent item')
         elif key < current.key:
+            current.subtree_size -= 1
             current.left  = self.delete_aux(current.left, key)
         elif key > current.key:
+            current.subtree_size -= 1
             current.right = self.delete_aux(current.right, key)
         else:  # we found our key => do actual deletion
             if self.is_leaf(current):
@@ -129,6 +133,7 @@ class BinarySearchTree(Generic[K, I]):
             succ = self.get_successor(current)
             current.key  = succ.key
             current.item = succ.item
+            current.subtree_size -= 1
             current.right = self.delete_aux(current.right, succ.key)
 
         return current
@@ -139,13 +144,18 @@ class BinarySearchTree(Generic[K, I]):
             It should be a child node having the smallest key among all the
             larger keys.
         """
-        raise NotImplementedError()
+        return self.get_minimal(current.right)
 
     def get_minimal(self, current: TreeNode) -> TreeNode:
         """
             Get a node having the smallest key in the current sub-tree.
         """
-        raise NotImplementedError()
+        if current is None:
+            return None
+        elif current.left is None:
+            return current
+        else:
+            return self.get_minimal(current.left)
 
     def is_leaf(self, current: TreeNode) -> bool:
         """ Simple check whether or not the node is a leaf. """
@@ -176,4 +186,17 @@ class BinarySearchTree(Generic[K, I]):
         """
         Finds the kth smallest value by key in the subtree rooted at current.
         """
-        raise NotImplementedError()
+        if current.left is not None:
+            left_counter = current.left.subtree_size
+        else:
+            left_counter = 0
+
+        # if k is less than or equal to the size of the left subtree, k is in the left subtree
+        if k <= left_counter:
+            return self.kth_smallest(k, current.left)
+        # if k is equal to the size of the left subtree + 1, k is the current
+        elif k == left_counter + 1:
+            return current
+        # otherwise k is in the right subtree
+        else:
+            return self.kth_smallest(k - 1 - left_counter, current.right)
