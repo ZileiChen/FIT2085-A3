@@ -9,15 +9,20 @@ I = TypeVar("I")
 class Percentiles(Generic[T]):
 
     def __init__(self) -> None:
-        raise NotImplementedError()
+        # Using binary search tree to implement methods
+        self.tree = BinarySearchTree()
     
     def add_point(self, item: T):
-        raise NotImplementedError()
+        # Using binary search tree to insert
+        self.tree[item] = [item]
     
     def remove_point(self, item: T):
-        raise NotImplementedError()
+        # Using binary search tree to remove
+        del self.tree[item]
 
     def ratio(self, x, y):
+
+        # use binary search for the lower and upper values
         raise NotImplementedError()
 
 if __name__ == "__main__":
