@@ -10,9 +10,18 @@ class BeeNode:
 
     key: Point
     item: I
+    x_y_z: BeeNode | None = None
+    x_y_nz: BeeNode | None = None
+    x_ny_z: BeeNode | None = None
+    x_ny_nz: BeeNode | None = None
+    nx_y_z: BeeNode | None = None
+    nx_ny_z: BeeNode | None = None
+    nx_y_nz: BeeNode | None = None
+    nx_ny_nz: BeeNode | None = None
     subtree_size: int = 1
 
     def get_child_for_key(self, point: Point) -> BeeNode | None:
+
         raise NotImplementedError()
 
 
@@ -64,7 +73,36 @@ class ThreeDeeBeeTree(Generic[I]):
         """
             Attempts to insert an item into the tree, it uses the Key to insert it
         """
-        raise NotImplementedError()
+        if current is None:  # base case: at the leaf
+            current = BeeNode(key, item=item)
+            self.length += 1
+        elif key[0] > current.key[0] and key[1] > current.key[1] and key[2] > current.key[2]:
+            current.subtree_size += 1
+            current.x_y_z = self.insert_aux(current.x_y_z, key, item)
+        elif key[0] > current.key[0] and key[1] > current.key[1] and key[2] < current.key[2]:
+            current.subtree_size += 1
+            current.x_y_nz = self.insert_aux(current.x_y_nz, key, item)
+        elif key[0] > current.key[0] and key[1] < current.key[1] and key[2] < current.key[2]:
+            current.subtree_size += 1
+            current.x_ny_nz = self.insert_aux(current.x_ny_nz, key, item)
+        elif key[0] < current.key[0] and key[1] < current.key[1] and key[2] < current.key[2]:
+            current.subtree_size += 1
+            current.nx_ny_nz = self.insert_aux(current.nx_ny_nz, key, item)
+        elif key[0] > current.key[0] and key[1] < current.key[1] and key[2] > current.key[2]:
+            current.subtree_size += 1
+            current.x_ny_z = self.insert_aux(current.x_ny_z, key, item)
+        elif key[0] < current.key[0] and key[1] < current.key[1] and key[2] > current.key[2]:
+            current.subtree_size += 1
+            current.nx_ny_z = self.insert_aux(current.nx_ny_z, key, item)
+        elif key[0] < current.key[0] and key[1] > current.key[1] and key[2] < current.key[2]:
+            current.subtree_size += 1
+            current.nx_y_nz = self.insert_aux(current.nx_y_nz, key, item)
+        elif key[0] < current.key[0] and key[1] > current.key[1] and key[2] > current.key[2]:
+            current.subtree_size += 1
+            current.nx_y_z = self.insert_aux(current.nx_y_z, key, item)
+        else:  # key == current.key
+            raise ValueError('Inserting duplicate item')
+        return current
 
     def is_leaf(self, current: BeeNode) -> bool:
         """ Simple check whether or not the node is a leaf. """
