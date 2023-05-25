@@ -200,3 +200,16 @@ class BinarySearchTree(Generic[K, I]):
         # otherwise k is in the right subtree
         else:
             return self.kth_smallest(k - 1 - left_counter, current.right)
+
+
+    # Not sure if this is needed, delete later if not used
+    def traversal_inorder(self, treenode: TreeNode, x, y) -> list:
+        inorder_list = []
+        self.traversal_inorder_aux(treenode, inorder_list, x, y)
+        return inorder_list
+
+    def traversal_inorder_aux(self, current: TreeNode, inorder_list: list, x: int, y: int):
+        if current is not None:
+            self.traversal_inorder_aux(current.left, inorder_list, x, y)
+            inorder_list.append(current.item)
+            self.traversal_inorder_aux(current.right, inorder_list, x, y)
