@@ -24,23 +24,24 @@ class Percentiles(Generic[T]):
     def ratio(self, x: int, y: int) -> list:
         x_index = ceil(x/100 * len(self.tree)) + 1
         y_index = len(self.tree) - ceil(y/100 * len(self.tree))
-        xth_element = self.tree.kth_smallest(x_index, self.tree.root).item
-        yth_element = self.tree.kth_smallest(y_index, self.tree.root).item
+        xth_element = self.tree.kth_smallest(x_index, self.tree.root).key
+        yth_element = self.tree.kth_smallest(y_index, self.tree.root).key
         result = []
         self.modified_inorder_traversal(self.tree.root, xth_element, yth_element, result)
         return result
 
     def modified_inorder_traversal(self, current_node: TreeNode, x: int, y: int, inorder_list: list):
         if current_node is not None:
-            if x < current_node.item:
+            if x < current_node.key:
                 self.modified_inorder_traversal(current_node.left, x, y, inorder_list)
-            if x <= current_node.item <= y:
+            if x <= current_node.key <= y:
                 inorder_list.append(current_node.item)
-            if y > current_node.item:
+            if y > current_node.key:
                 self.modified_inorder_traversal(current_node.right, x, y, inorder_list)
 
     def add_point_key_value(self, key: T, value: T):
         self.tree[key] = value
+
 
 if __name__ == "__main__":
     points = list(range(50))
@@ -50,4 +51,4 @@ if __name__ == "__main__":
     for point in points:
         p.add_point(point)
     # Numbers from 8 to 16.
-    print(p.ratio(15, 66))
+    print(p.ratio(0, 0))
