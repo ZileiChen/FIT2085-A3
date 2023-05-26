@@ -15,13 +15,13 @@ class Percentiles(Generic[T]):
     
     def add_point(self, item: T):
         # Using binary search tree to insert
-        self.tree[item] = [item]
+        self.tree[item] = item
     
     def remove_point(self, item: T):
         # Using binary search tree to remove
         del self.tree[item]
 
-    def ratio(self, x, y) -> list:
+    def ratio(self, x: int, y: int) -> list:
         x_index = ceil(x/100 * len(self.tree)) + 1
         y_index = len(self.tree) - ceil(y/100 * len(self.tree))
         xth_element = self.tree.kth_smallest(x_index, self.tree.root).item
@@ -35,10 +35,12 @@ class Percentiles(Generic[T]):
             if x < current_node.item:
                 self.modified_inorder_traversal(current_node.left, x, y, inorder_list)
             if x <= current_node.item <= y:
-                inorder_list.append(current_node.key)
+                inorder_list.append(current_node.item)
             if y > current_node.item:
                 self.modified_inorder_traversal(current_node.right, x, y, inorder_list)
 
+    def add_point_key_value(self, key: T, value: T):
+        self.tree[key] = value
 
 if __name__ == "__main__":
     points = list(range(50))

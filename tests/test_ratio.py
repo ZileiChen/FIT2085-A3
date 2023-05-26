@@ -20,7 +20,6 @@ class RatioTest(unittest.TestCase):
         self.assertSetEqual(set(res), {14, 15, 16, 82, 87, 91, 92})
 
         res = p.ratio(0, 42)
-        print(p.ratio(0,42))
         self.assertSetEqual(set(res), {4, 9, 14, 15, 16})
 
     @timeout()

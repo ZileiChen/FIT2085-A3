@@ -1,46 +1,111 @@
 from __future__ import annotations
 
+from math import ceil
+
+from ratio import Percentiles
 from threedeebeetree import Point
 
-
 def make_ordering(my_coordinate_list: list[Point]) -> list[Point]:
-    # currently has O(n * logn) complexity
-    # if can multiply this by logn, will have correct complexity
-    sorted_list = sorted(my_coordinate_list)  # O(n * logn)
-    x_sorted = sorted(my_coordinate_list, key=lambda x: x[0])
-    result = []
+    px = Percentiles()
+    py = Percentiles()
+    pz = Percentiles()
+    factor = 12.5
+    for coordinate in my_coordinate_list:
+        px.add_point_key_value(coordinate[0], coordinate)
+        py.add_point_key_value(coordinate[1], coordinate)
+        pz.add_point_key_value(coordinate[2], coordinate)
 
-    def build_tree_rec(lo, hi):
-        if hi - lo < 1:
-            return
-        # Add median
-        mid = (hi + lo) // 2
-        result.append(sorted_list[mid])
-        build_tree_rec(lo, mid)
-        build_tree_rec(mid + 1, hi)
+    complete_x = px.ratio(0, 0)
+    complete_y = py.ratio(0, 0)
+    complete_z = pz.ratio(0, 0)
 
-    build_tree_rec(0, len(sorted_list))
-    return result
+    solution = []
+    make_ordering_aux(solution, px, py, pz, [0, 0], [0, 0], [0, 0], complete_x, complete_y, complete_z)
+    return solution
+
+def make_ordering_aux(solution_list: list, x: Percentiles, y: Percentiles, z: Percentiles, x_range: list, y_range: list, z_range: list, x_sorted, y_sorted, z_sorted):
+    relative_factor_x = (100 - x_range[1] - x_range[0]) * 12.5 / 100
+    relative_factor_y = (100 - y_range[1] - y_range[0]) * 12.5 / 100
+    relative_factor_z = (100 - z_range[1] - z_range[0]) * 12.5 / 100
+
+    x_candidate = x.ratio(x_range[0], x_range[1])
+    y_candidate = y.ratio(y_range[0], y_range[1])
+    z_candidate = z.ratio(z_range[0], z_range[1])
+
+    if min(len(x_candidate), len(y_candidate), len(z_candidate)) < 17:
+        #add the rest of the points to the solution list in any order
+        for coord in x_candidate:
+            solution_list.append(coord)
+        for coord in y_candidate:
+            if y_candidate.__contains__(coord):
+                solution_list.append(coord)
+        for coord in z_candidate:
+            if z_candidate.__contains__(coord):
+                solution_list.append(coord)
+        return
+    else:
+        x_candidate = x_candidate[ceil(12.5/100 * len(x_candidate)) + 1 : len(x_candidate) - ceil(12.5/100 * len(x_candidate))]
+        y_candidate = y_candidate[ceil(12.5/100 * len(y_candidate)) + 1 : len(y_candidate) - ceil(12.5/100 * len(y_candidate))]
+        z_candidate = z_candidate[ceil(12.5/100 * len(z_candidate)) + 1 : len(z_candidate) - ceil(12.5/100 * len(z_candidate))]
 
 
-def summation(test_tup):
-    # Converting into list
-    test = list(test_tup)
 
-    # Initializing count
-    count = 0
-
-    # for loop
-    for i in test:
-        count += i
-    return count
+    candidates = list(set(x_candidate).intersection(y_candidate).intersection(z_candidate))
 
 
-'''
-    test = []
-    for i in range(len(my_coordinate_list)):
-        test.append([i, summation(my_coordinate_list[i])])
-    test_sorted = sorted(test, key=lambda x: x[1])
-    result2 = []
-    '''
-# result2.append(my_coordinate_list[test_sorted[mid][0]])
+
+    x_index = x_sorted.index(candidates[0])
+    y_index = y_sorted.index(candidates[0])
+    z_index = z_sorted.index(candidates[0])
+    solution_list.append(candidates[0])
+    x.remove_point(candidates[0])
+    y.remove_point(candidates[0])
+    z.remove_point(candidates[0])
+
+    # +x, +y, +z
+    x_range = [x_index * 100 / len(x_candidate), x_range[1]]
+    y_range = [y_index * 100 / len(y_candidate), y_range[1]]
+    z_range = [z_index * 100 / len(z_candidate), z_range[1]]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # +x, +y, -z
+    x_range = [x_index * 100 / len(x_candidate), x_range[1]]
+    y_range = [y_index * 100 / len(y_candidate), y_range[1]]
+    z_range = [z_range[0], z_index * 100 / len(z_candidate)]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # +x, -y, +z
+    x_range = [x_index * 100 / len(x_candidate), x_range[1]]
+    y_range = [y_range[0], y_index * 100 / len(y_candidate)]
+    z_range = [z_index * 100 / len(z_candidate), z_range[1]]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # -x, +y, +z
+    x_range = [x_range[0], x_index * 100 / len(x_candidate)]
+    y_range = [y_index * 100 / len(y_candidate), y_range[1]]
+    z_range = [z_index * 100 / len(z_candidate), z_range[1]]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # +x, -y, -z
+    x_range = [x_index * 100 / len(x_candidate), x_range[1]]
+    y_range = [y_range[0], y_index * 100 / len(y_candidate)]
+    z_range = [z_range[0], z_index * 100 / len(z_candidate)]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # -x, -y, +z
+    x_range = [x_range[0], x_index * 100 / len(x_candidate)]
+    y_range = [y_range[0], y_index * 100 / len(y_candidate)]
+    z_range = [z_index * 100 / len(z_candidate), z_range[1]]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # -x, +y, -z
+    x_range = [x_range[0], x_index * 100 / len(x_candidate)]
+    y_range = [y_index * 100 / len(y_candidate), y_range[1]]
+    z_range = [z_range[0], z_index * 100 / len(z_candidate)]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
+
+    # -x, -y, -z
+    x_range = [x_range[0], x_index * 100 / len(x_candidate)]
+    y_range = [y_range[0], y_index * 100 / len(y_candidate)]
+    z_range = [z_range[0], z_index * 100 / len(z_candidate)]
+    make_ordering_aux(solution_list, x, y, z, x_range, y_range, z_range)
