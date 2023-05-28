@@ -10,14 +10,27 @@ I = TypeVar("I")
 class Percentiles(Generic[T]):
 
     def __init__(self) -> None:
+        """
+            Constructor for Percentiles class.
+            :complexity: O(1)
+        """
         # Using binary search tree to implement methods
         self.tree = BinarySearchTree()
     
     def add_point(self, item: T):
+        """
+        Adds an item to the Percentiles tree using binary search tree.
+        :complexity: Worst case: O(N) where n is the number of elements in the search tree and the tree has a depth
+        of N.
+        Best case: O(logN) where N is the number of elements in the search tree and the tree is balanced.
+        """
         # Using binary search tree to insert
         self.tree[item] = item
     
     def remove_point(self, item: T):
+        """
+
+        """
         # Using binary search tree to remove
         del self.tree[item]
 
