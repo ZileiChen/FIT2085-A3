@@ -21,6 +21,9 @@ class BeeNode:
     subtree_size: int = 1
 
     def get_child_for_key(self, point: Point) -> BeeNode | None:
+        """
+        Best case = Worst case: O(1) * O(comp) where comp is the complexity of comparing the points and keys
+        """
         if point[0] > self.key[0] and point[1] > self.key[1] and point[2] > self.key[2]:
             return self.x_y_z
         elif point[0] > self.key[0] and point[1] > self.key[1] and point[2] < self.key[2]:
@@ -80,9 +83,21 @@ class ThreeDeeBeeTree(Generic[I]):
         return node.item
 
     def get_tree_node_by_key(self, key: Point) -> BeeNode:
+        """
+        Best case: O(1) * O(comp) where comp is the complexity of the comparison between keys. Best case when the key
+        is the key for the current node
+        Worst case: O(D) * O(comp), tree node is at the end of one of the quadrants in the tree, comp is the complexity
+        of the comparison between keys
+        """
         return self.get_tree_node_by_key_aux(self.root, key)
 
     def get_tree_node_by_key_aux(self, current: BeeNode, key: Point) -> BeeNode:
+        """
+        Best case: O(1) * O(comp) where comp is the complexity of the comparison between keys. Best case when the key
+        is the key for the current node
+        Worst case: O(D) * O(comp), tree node is at the end of one of the quadrants in the tree, comp is the complexity
+        of the comparison between keys
+        """
         if current is None:
             raise KeyError('Key not found: {0}'.format(key))
         elif key == current.key:
@@ -105,11 +120,19 @@ class ThreeDeeBeeTree(Generic[I]):
             return self.get_tree_node_by_key_aux(current.nx_y_z, key)
 
     def __setitem__(self, key: Point, item: I) -> None:
+        """
+            Best case: O(1) * O(comp) where comp is the complexity of the comparison between keys
+            Worst case: O(D) * O(comp) where D is the depth of the tree and comp is the complexity of the comparison
+            between keys. Worst case when inserting at the end of one of the quadrants
+        """
         self.root = self.insert_aux(self.root, key, item)
 
     def insert_aux(self, current: BeeNode, key: Point, item: I) -> BeeNode:
         """
             Attempts to insert an item into the tree, it uses the Key to insert it
+            Best case: O(1) * O(comp) where comp is the complexity of the comparison between keys
+            Worst case: O(D) * O(comp) where D is the depth of the tree and comp is the complexity of the comparison
+            between keys. Worst case when inserting at the end of one of the quadrants
         """
         if current is None:  # base case: at the leaf
             current = BeeNode(key, item=item)
@@ -143,7 +166,10 @@ class ThreeDeeBeeTree(Generic[I]):
         return current
 
     def is_leaf(self, current: BeeNode) -> bool:
-        """ Simple check whether or not the node is a leaf. """
+        """
+        Simple check whether or not the node is a leaf.
+        Best case = Worst case: O(1)
+        """
         return current.subtree_size == 1
 
 
