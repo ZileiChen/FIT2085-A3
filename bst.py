@@ -213,3 +213,7 @@ class BinarySearchTree(Generic[K, I]):
             self.traversal_inorder_aux(current.left, inorder_list, x, y)
             inorder_list.append(current.item)
             self.traversal_inorder_aux(current.right, inorder_list, x, y)
+
+    def clear(self):
+        self.root = None
+        self.length = 0
