@@ -108,6 +108,9 @@ class BinarySearchTree(Generic[K, I]):
         """
             Attempts to delete an item from the tree, it uses the Key to
             determine the node to delete.
+            Best case: O(comp) where comp is the complexity of comparison between keys
+            Worst case: O(comp * D) where D is the depth of the tree and comp is the complexity of comparison between
+            keys
         """
 
         if current is None:  # key not found
@@ -143,12 +146,20 @@ class BinarySearchTree(Generic[K, I]):
             Get successor of the current node.
             It should be a child node having the smallest key among all the
             larger keys.
+            Best case: O(1) when the tree is unbalanced and the root is the smallest element, or getting minimal of node
+            before the leaf
+            Worst case: O(n) where n is the number of elements in the tree and the tree is unbalanced, all elements down
+            the left side
         """
         return self.get_minimal(current.right)
 
     def get_minimal(self, current: TreeNode) -> TreeNode:
         """
             Get a node having the smallest key in the current sub-tree.
+            Best case: O(1) when the tree is unbalanced and the root is the smallest element, or getting minimal of node
+            before the leaf
+            Worst case: O(n) where n is the number of elements in the tree and the tree is unbalanced, all elements down
+            the left side
         """
         if current is None:
             return None
@@ -185,6 +196,8 @@ class BinarySearchTree(Generic[K, I]):
     def kth_smallest(self, k: int, current: TreeNode) -> TreeNode:
         """
         Finds the kth smallest value by key in the subtree rooted at current.
+        Best case: O(1) where the kth smallest value is the current value
+        Worst case: O(D) where D is the depth of the tree
         """
         if current.left is not None:
             left_counter = current.left.subtree_size
@@ -201,19 +214,10 @@ class BinarySearchTree(Generic[K, I]):
         else:
             return self.kth_smallest(k - 1 - left_counter, current.right)
 
-
-    # Not sure if this is needed, delete later if not used
-    def traversal_inorder(self, treenode: TreeNode, x, y) -> list:
-        inorder_list = []
-        self.traversal_inorder_aux(treenode, inorder_list, x, y)
-        return inorder_list
-
-    def traversal_inorder_aux(self, current: TreeNode, inorder_list: list, x: int, y: int):
-        if current is not None:
-            self.traversal_inorder_aux(current.left, inorder_list, x, y)
-            inorder_list.append(current.item)
-            self.traversal_inorder_aux(current.right, inorder_list, x, y)
-
     def clear(self):
+        """
+        Clears the bst
+        Best case = Worst case: O(1)
+        """
         self.root = None
         self.length = 0
