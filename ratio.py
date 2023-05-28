@@ -55,6 +55,9 @@ class Percentiles(Generic[T]):
     def add_point_key_value(self, key: T, value: T):
         self.tree[key] = value
 
+    def clear(self):
+        self.tree.clear()
+
 
 if __name__ == "__main__":
     points = list(range(50))
