@@ -15,7 +15,7 @@ def make_ordering(my_coordinate_list: list[Point]) -> list[Point]:
     return solution
 
 def make_ordering_aux(subsection: list, solution: list, px, py, pz):
-    if len(subsection) <= 17:
+    if len(subsection) <= 9:
         solution.extend(subsection)
         return
 
